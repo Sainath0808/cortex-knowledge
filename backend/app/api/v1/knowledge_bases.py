@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter
 
-from app.api.deps import CurrentUser, DB
+from app.api.deps import DB, CurrentUser
 from app.schemas.api import KnowledgeBaseCreateRequest, KnowledgeBaseOut
 from app.services.knowledge_base_service import KnowledgeBaseService
 

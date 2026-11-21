@@ -3,24 +3,36 @@ against the golden dataset, prints a report, and stores an EvalRun row.
 
 Usage: python -m ai.evals.run_evals [--skip-generation]
 """
+
 import argparse
 import asyncio
 import json
 from pathlib import Path
 from uuid import UUID
 
+from app.core.config import get_settings
+
 from ai.evals.llm_judge import judge_faithfulness
-from ai.evals.retrieval_metrics import aggregate, hit_rate, precision_at_k, recall_at_k, reciprocal_rank
+from ai.evals.retrieval_metrics import (
+    aggregate,
+    hit_rate,
+    precision_at_k,
+    recall_at_k,
+    reciprocal_rank,
+)
 from ai.rag.pipeline import answer_query, build_context
 from ai.rag.retriever import retrieve
-from app.core.config import get_settings
 
 GOLDEN_PATH = Path(__file__).parent / "datasets" / "golden.jsonl"
 K = 5
 
 
 def load_golden() -> list[dict]:
-    return [json.loads(line) for line in GOLDEN_PATH.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line)
+        for line in GOLDEN_PATH.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
 
 async def eval_retrieval(cases: list[dict], owner_id: UUID) -> dict:
@@ -58,7 +70,9 @@ async def eval_generation(cases: list[dict], owner_id: UUID) -> dict:
 async def main(skip_generation: bool) -> None:
     configured_owner = get_settings().eval_owner_id
     if not configured_owner:
-        raise RuntimeError("Set EVAL_OWNER_ID to the user whose documents form the evaluation corpus")
+        raise RuntimeError(
+            "Set EVAL_OWNER_ID to the user whose documents form the evaluation corpus"
+        )
     owner_id = UUID(configured_owner)
     cases = load_golden()
     print(f"Running evals over {len(cases)} golden cases...\n")

@@ -7,14 +7,16 @@ Two strategies:
    More accurate, but adds latency and cost, so it runs on a small candidate
    set after cheap vector search narrows the field.
 """
+
 import asyncio
 import json
 from dataclasses import replace
 
+from app.core.logging import get_logger
+
 from ai.llm.client import get_llm_client
 from ai.llm.prompts import RERANK
 from ai.rag.vectorstore import ScoredChunk
-from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -31,16 +33,19 @@ def rrf_merge(result_lists: list[list[ScoredChunk]], *, k: int = 60) -> list[Sco
     return [replace(by_id[chunk_id], score=score) for chunk_id, score in ordered]
 
 
-async def llm_rerank(
-    query: str, chunks: list[ScoredChunk], *, top_k: int = 5
-) -> list[ScoredChunk]:
+async def llm_rerank(query: str, chunks: list[ScoredChunk], *, top_k: int = 5) -> list[ScoredChunk]:
     """Pointwise LLM reranking; falls back to vector order on failure."""
     client = get_llm_client()
 
     async def score(chunk: ScoredChunk) -> tuple[ScoredChunk, float]:
         try:
             result = await client.chat(
-                [{"role": "user", "content": RERANK.render(query=query, passage=chunk.content[:2000])}],
+                [
+                    {
+                        "role": "user",
+                        "content": RERANK.render(query=query, passage=chunk.content[:2000]),
+                    }
+                ],
                 temperature=0.0,
                 max_tokens=20,
                 response_format={"type": "json_object"},

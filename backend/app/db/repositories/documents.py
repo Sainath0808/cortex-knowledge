@@ -1,4 +1,5 @@
 """Document and chunk repository."""
+
 from uuid import UUID
 
 from sqlalchemy import delete, func, select
@@ -54,13 +55,16 @@ class DocumentRepository:
         statement = select(Document).where(Document.owner_id == owner_id)
         if knowledge_base_id is not None:
             statement = statement.where(Document.knowledge_base_id == knowledge_base_id)
-        result = await self.db.execute(
-            statement.order_by(Document.created_at.desc()).limit(limit)
-        )
+        result = await self.db.execute(statement.order_by(Document.created_at.desc()).limit(limit))
         return list(result.scalars())
 
     async def set_status(
-        self, doc_id: UUID, status: DocumentStatus, *, error: str | None = None, chunk_count: int | None = None
+        self,
+        doc_id: UUID,
+        status: DocumentStatus,
+        *,
+        error: str | None = None,
+        chunk_count: int | None = None,
     ) -> None:
         doc = await self.db.get(Document, doc_id)
         if doc is None:
@@ -93,9 +97,7 @@ class DocumentRepository:
         return list(result.scalars())
 
     async def delete_chunks(self, doc_id: UUID) -> None:
-        await self.db.execute(
-            delete(DocumentChunk).where(DocumentChunk.document_id == doc_id)
-        )
+        await self.db.execute(delete(DocumentChunk).where(DocumentChunk.document_id == doc_id))
 
     async def stats(self, owner_id: UUID | None = None) -> dict:
         doc_query = select(func.count(Document.id))

@@ -4,10 +4,10 @@ Short-term memory = the conversation's message history, trimmed to a token
 budget (most recent first). Long-term memory = the knowledge base itself,
 accessed through retrieval rather than stuffed into the prompt.
 """
+from app.db.models import Conversation
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 from ai.rag.chunking import count_tokens
-from app.db.models import Conversation
 
 HISTORY_TOKEN_BUDGET = 3000
 

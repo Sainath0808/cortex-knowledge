@@ -6,14 +6,15 @@ and by the agent's knowledge_search tool.
 from dataclasses import dataclass, field
 from uuid import UUID
 
+from app.core.config import get_settings
+from app.core.telemetry import get_tracer
+
 from ai.llm.client import get_llm_client
 from ai.llm.prompts import RAG_ANSWER
 from ai.rag.chunking import count_tokens
 from ai.rag.reranker import llm_rerank
 from ai.rag.retriever import retrieve
 from ai.rag.vectorstore import ScoredChunk
-from app.core.config import get_settings
-from app.core.telemetry import get_tracer
 
 
 @dataclass

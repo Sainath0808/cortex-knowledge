@@ -4,6 +4,7 @@ Every model call in the platform goes through this module so that retries,
 timeouts, cost tracking, latency measurement, and tracing are applied
 uniformly. Nothing else in the codebase imports the openai SDK directly.
 """
+
 import time
 from dataclasses import dataclass, field
 from functools import lru_cache
@@ -11,6 +12,10 @@ from typing import Any
 from uuid import UUID
 
 import structlog
+from app.core.config import get_settings
+from app.core.exceptions import UpstreamAIError
+from app.core.logging import get_logger
+from app.core.telemetry import get_tracer
 from openai import (
     APIConnectionError,
     APITimeoutError,
@@ -26,10 +31,6 @@ from tenacity import (
 )
 
 from ai.llm.costs import estimate_cost
-from app.core.config import get_settings
-from app.core.exceptions import UpstreamAIError
-from app.core.logging import get_logger
-from app.core.telemetry import get_tracer
 
 logger = get_logger(__name__)
 
@@ -50,7 +51,11 @@ def build_provider_client(settings) -> tuple[AsyncOpenAI | AsyncAzureOpenAI, str
             timeout=settings.llm_timeout_seconds,
             max_retries=0,  # we own retries via tenacity
         )
-        return client, settings.azure_openai_chat_deployment, settings.azure_openai_embedding_deployment
+        return (
+            client,
+            settings.azure_openai_chat_deployment,
+            settings.azure_openai_embedding_deployment,
+        )
 
     client = AsyncOpenAI(
         base_url=settings.llm_base_url or None,  # None = api.openai.com

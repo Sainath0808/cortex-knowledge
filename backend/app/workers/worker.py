@@ -4,6 +4,7 @@ ingest_document: text -> chunk -> embed -> upsert to Qdrant -> mark ready.
 Failures mark the document as failed with the error message; arq retries
 transient failures automatically.
 """
+
 from arq.connections import RedisSettings
 
 from app.core.config import get_settings
@@ -53,16 +54,18 @@ async def ingest_document(ctx: dict, document_id: str, text: str) -> str:
             rows = await repo.add_chunks(
                 doc_uuid,
                 [
-                    {"chunk_index": c.chunk_index, "content": c.content, "token_count": c.token_count}
+                    {
+                        "chunk_index": c.chunk_index,
+                        "content": c.content,
+                        "token_count": c.token_count,
+                    }
                     for c in chunks
                 ],
             )
             chunk_ids = [str(r.id) for r in rows]
             title = doc.title
             owner_id = str(doc.owner_id)
-            knowledge_base_id = (
-                str(doc.knowledge_base_id) if doc.knowledge_base_id else None
-            )
+            knowledge_base_id = str(doc.knowledge_base_id) if doc.knowledge_base_id else None
             await session.commit()
 
         vectors = await embed_texts([c.content for c in chunks])
@@ -117,9 +120,7 @@ async def reindex_document(ctx: dict, document_id: str) -> str:
             raise ValueError(f"Document {document_id} has no stored chunks to re-index")
         title = doc.title
         owner_id = str(doc.owner_id)
-        knowledge_base_id = (
-            str(doc.knowledge_base_id) if doc.knowledge_base_id else None
-        )
+        knowledge_base_id = str(doc.knowledge_base_id) if doc.knowledge_base_id else None
         await repo.set_status(doc_uuid, DocumentStatus.processing)
         await session.commit()
 
