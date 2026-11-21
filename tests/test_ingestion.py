@@ -39,5 +39,5 @@ async def test_content_hash_lookup_is_scoped_to_owner(db_session):
         content_sha256="a" * 64,
     )
 
-    assert await repository.get_by_content_sha256(first_user.id, "a" * 64) == document
-    assert await repository.get_by_content_sha256(second_user.id, "a" * 64) is None
+    assert await repository.get_by_content_sha256(first_user.id, "a" * 64, None) == document
+    assert await repository.get_by_content_sha256(second_user.id, "a" * 64, None) is None
