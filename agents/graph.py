@@ -12,11 +12,15 @@ Graph topology:
 - tools: executes requested tool calls, results feed back to agent.
 - A hard tool-call budget prevents infinite agent loops.
 """
-from functools import lru_cache
+
 import time
+from functools import lru_cache
 from uuid import UUID
 
 import structlog
+from app.core.config import get_settings
+from app.core.logging import get_logger
+from app.core.telemetry import get_tracer
 from langchain_core.messages import AIMessage, SystemMessage
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from langgraph.graph import END, START, StateGraph
@@ -27,9 +31,6 @@ from agents.tools import ALL_TOOLS
 from ai.guardrails.injection import check_input
 from ai.llm.costs import estimate_cost
 from ai.llm.prompts import AGENT_SYSTEM
-from app.core.config import get_settings
-from app.core.logging import get_logger
-from app.core.telemetry import get_tracer
 
 logger = get_logger(__name__)
 
@@ -73,11 +74,10 @@ async def guard_node(state: AgentState) -> dict:
     last_user = state["messages"][-1].content
     verdict = await check_input(str(last_user), use_classifier=False)
     if verdict.blocked:
+        message = "I can't process that request — it was flagged by our safety guardrails."
         return {
             "guardrail_blocked": True,
-            "messages": [
-                AIMessage(content="I can't process that request — it was flagged by our safety guardrails.")
-            ],
+            "messages": [AIMessage(content=message)],
         }
     return {"guardrail_blocked": False}
 
@@ -113,9 +113,7 @@ async def agent_node(state: AgentState) -> dict:
                     cost_usd=estimate_cost(model_name, prompt_tokens, completion_tokens),
                     latency_ms=(time.perf_counter() - started_at) * 1000,
                     request_id=context.get("request_id"),
-                    user_id=(
-                        UUID(context["user_id"]) if context.get("user_id") else None
-                    ),
+                    user_id=(UUID(context["user_id"]) if context.get("user_id") else None),
                 )
             except Exception:
                 logger.exception("agent_usage_record_failed")
@@ -136,7 +134,10 @@ async def agent_node(state: AgentState) -> dict:
             return {
                 "messages": [
                     AIMessage(
-                        content="I hit my tool-use limit for this request. Here is what I found so far: "
+                        content=(
+                            "I hit my tool-use limit for this request. "
+                            "Here is what I found so far: "
+                        )
                         + (response.content or "no conclusive answer yet.")
                     )
                 ]

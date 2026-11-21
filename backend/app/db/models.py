@@ -4,6 +4,7 @@ PostgreSQL stores everything except vectors (which live in Qdrant):
 users, documents, chunk metadata, conversations, messages, LLM usage/cost
 records, and evaluation runs.
 """
+
 import enum
 import uuid
 from datetime import UTC, datetime
@@ -32,13 +33,13 @@ class Base(DeclarativeBase):
     pass
 
 
-class UserRole(str, enum.Enum):
+class UserRole(str, enum.Enum):  # noqa: UP042
     admin = "admin"
     member = "member"
     viewer = "viewer"
 
 
-class DocumentStatus(str, enum.Enum):
+class DocumentStatus(str, enum.Enum):  # noqa: UP042
     pending = "pending"
     processing = "processing"
     ready = "ready"
@@ -73,6 +74,7 @@ class KnowledgeBase(Base):
 
     owner: Mapped[User] = relationship(back_populates="knowledge_bases")
     documents: Mapped[list["Document"]] = relationship(back_populates="knowledge_base")
+
 
 class Document(Base):
     __tablename__ = "documents"
@@ -169,7 +171,9 @@ class LLMUsage(Base):
     completion_tokens: Mapped[int] = mapped_column(Integer, default=0)
     cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
     latency_ms: Mapped[float] = mapped_column(Float, default=0.0)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
+    )
 
 
 class EvalRun(Base):

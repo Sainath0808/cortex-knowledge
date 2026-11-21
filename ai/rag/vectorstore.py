@@ -7,9 +7,8 @@ answers without a Postgres round-trip on the hot path.
 from dataclasses import dataclass
 from functools import lru_cache
 
-from qdrant_client import AsyncQdrantClient, models
-
 from app.core.config import get_settings
+from qdrant_client import AsyncQdrantClient, models
 
 
 @dataclass

@@ -2,12 +2,13 @@
 import asyncio
 from uuid import UUID
 
+from app.core.config import get_settings
+from app.core.telemetry import get_tracer
+
 from ai.rag.bm25 import search_bm25
 from ai.rag.embeddings import embed_query
 from ai.rag.reranker import rrf_merge
 from ai.rag.vectorstore import ScoredChunk, get_vector_store
-from app.core.config import get_settings
-from app.core.telemetry import get_tracer
 
 
 async def retrieve(

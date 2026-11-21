@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+uv.lock
 .env
 .env.*
 !.env.example

@@ -2,7 +2,7 @@
 from fastapi import APIRouter
 
 from ai.rag.retriever import retrieve
-from app.api.deps import CurrentUser, DB
+from app.api.deps import DB, CurrentUser
 from app.schemas.api import SearchHit, SearchRequest, SearchResponse
 from app.services.knowledge_base_service import KnowledgeBaseService
 

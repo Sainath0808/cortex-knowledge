@@ -5,22 +5,22 @@ reads them to decide when and how to call a tool. Tools validate their own
 inputs and always return strings (LLM-readable results, including errors).
 """
 import ast
-from contextvars import ContextVar
 import json
 import operator
+from contextvars import ContextVar
 from typing import Annotated
 from uuid import UUID
 
+from app.core.config import get_settings
+from app.core.logging import get_logger
 from langchain_core.messages import BaseMessage
 from langchain_core.tools import tool
 from langgraph.prebuilt import InjectedState
 
 from ai.rag.pipeline import build_context
 from ai.rag.query_rewrite import contextualize_query
-from ai.rag.retriever import retrieve
 from ai.rag.reranker import llm_rerank
-from app.core.config import get_settings
-from app.core.logging import get_logger
+from ai.rag.retriever import retrieve
 
 logger = get_logger(__name__)
 
