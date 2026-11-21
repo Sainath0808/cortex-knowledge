@@ -1,0 +1,6 @@
+{"query": "What is the remote work policy?", "relevant_docs": ["Remote Work Policy"], "expected_answer_contains": ["remote", "days"]}
+{"query": "How many vacation days do employees get per year?", "relevant_docs": ["Employee Benefits Guide"], "expected_answer_contains": ["vacation", "days"]}
+{"query": "What is the process for reporting a security incident?", "relevant_docs": ["Security Incident Response Plan"], "expected_answer_contains": ["report", "incident"]}
+{"query": "Which cloud provider does the company use?", "relevant_docs": ["Engineering Handbook"], "expected_answer_contains": ["Azure"]}
+{"query": "What is the on-call rotation schedule?", "relevant_docs": ["Engineering Handbook"], "expected_answer_contains": ["on-call"]}
+{"query": "How do I submit an expense report?", "relevant_docs": ["Employee Benefits Guide"], "expected_answer_contains": ["expense"]}

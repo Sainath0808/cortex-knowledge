@@ -1,0 +1,19 @@
+# Background worker image (arq)
+FROM python:3.11-slim AS base
+
+WORKDIR /app
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONPATH=/app:/app/backend
+
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir -e .
+
+COPY backend ./backend
+COPY ai ./ai
+COPY agents ./agents
+
+RUN useradd -m appuser && chown -R appuser /app
+USER appuser
+
+CMD ["arq", "app.workers.worker.WorkerSettings"]
