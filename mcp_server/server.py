@@ -62,10 +62,9 @@ async def knowledge_search(query: str, top_k: int = 5) -> str:
 @mcp.tool()
 async def list_documents() -> str:
     """List documents indexed in the Cortex knowledge base with their status."""
-    from sqlalchemy import select
-
     from app.db.models import Document
     from app.db.session import async_session_factory
+    from sqlalchemy import select
 
     async with async_session_factory() as session:
         result = await session.execute(

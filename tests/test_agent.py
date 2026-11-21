@@ -1,4 +1,5 @@
 """Agent unit tests: routing logic, tool safety, budget enforcement."""
+
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage
 from langgraph.graph import END
 
@@ -16,14 +17,25 @@ class TestRouting:
         assert route_after_guard(state) == "agent"
 
     def test_agent_with_tool_calls_routes_to_tools(self):
-        msg = AIMessage(content="", tool_calls=[{"name": "calculator", "args": {"expression": "1+1"}, "id": "t1"}])
-        state = {"messages": [HumanMessage(content="hi"), msg], "guardrail_blocked": False,
-                 "citations": [], "tool_call_count": 0}
+        msg = AIMessage(
+            content="",
+            tool_calls=[{"name": "calculator", "args": {"expression": "1+1"}, "id": "t1"}],
+        )
+        state = {
+            "messages": [HumanMessage(content="hi"), msg],
+            "guardrail_blocked": False,
+            "citations": [],
+            "tool_call_count": 0,
+        }
         assert route_after_agent(state) == "tools"
 
     def test_agent_final_answer_routes_to_end(self):
-        state = {"messages": [AIMessage(content="Done.")], "guardrail_blocked": False,
-                 "citations": [], "tool_call_count": 0}
+        state = {
+            "messages": [AIMessage(content="Done.")],
+            "guardrail_blocked": False,
+            "citations": [],
+            "tool_call_count": 0,
+        }
         assert route_after_agent(state) == END
 
 

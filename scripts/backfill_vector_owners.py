@@ -1,11 +1,11 @@
 """Backfill owner_id payloads for existing Qdrant points before scoped retrieval."""
 import asyncio
 
+from app.db.models import Document
+from app.db.session import async_session_factory
 from sqlalchemy import select
 
 from ai.rag.vectorstore import get_vector_store
-from app.db.models import Document
-from app.db.session import async_session_factory
 
 
 async def main() -> None:

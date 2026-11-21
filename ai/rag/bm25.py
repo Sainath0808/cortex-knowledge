@@ -79,10 +79,9 @@ async def search_bm25(
     top_k: int,
     document_ids: list[str] | None = None,
 ) -> list[ScoredChunk]:
-    from sqlalchemy import select
-
     from app.db.models import Document, DocumentChunk, DocumentStatus
     from app.db.session import async_session_factory
+    from sqlalchemy import select
 
     statement = (
         select(DocumentChunk, Document.title)

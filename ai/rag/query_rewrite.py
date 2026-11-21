@@ -1,9 +1,9 @@
 """Conversation-aware query rewriting for follow-up retrieval."""
+from app.core.config import get_settings
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 from ai.llm.client import get_llm_client
 from ai.llm.prompts import CONTEXTUALIZE_QUERY
-from app.core.config import get_settings
 
 
 def _message_text(content: object) -> str:

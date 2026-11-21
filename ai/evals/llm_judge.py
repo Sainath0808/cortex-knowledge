@@ -7,9 +7,10 @@ signals across versions, not absolute truth.
 import json
 from dataclasses import dataclass
 
+from app.core.logging import get_logger
+
 from ai.llm.client import get_llm_client
 from ai.llm.prompts import LLM_JUDGE_FAITHFULNESS
-from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 

@@ -4,6 +4,7 @@ Splits documents along semantic boundaries (paragraphs, then sentences)
 while keeping each chunk under a token budget, with overlap between
 consecutive chunks so context isn't lost at boundaries.
 """
+
 import re
 from dataclasses import dataclass
 from math import sqrt
@@ -38,9 +39,7 @@ def _split_sentences(text: str) -> list[str]:
 def _hard_split(text: str, max_tokens: int) -> list[str]:
     """Last resort: split by raw tokens for pathological inputs (no punctuation)."""
     tokens = _encoding.encode(text)
-    return [
-        _encoding.decode(tokens[i : i + max_tokens]) for i in range(0, len(tokens), max_tokens)
-    ]
+    return [_encoding.decode(tokens[i : i + max_tokens]) for i in range(0, len(tokens), max_tokens)]
 
 
 def _validate_chunk_sizes(max_tokens: int, overlap_tokens: int) -> None:
@@ -108,15 +107,17 @@ def chunk_text(text: str, *, max_tokens: int = 512, overlap_tokens: int = 64) ->
     return chunks
 
 
-def chunk_fixed(
-    text: str, *, max_tokens: int = 512, overlap_tokens: int = 64
-) -> list[Chunk]:
+def chunk_fixed(text: str, *, max_tokens: int = 512, overlap_tokens: int = 64) -> list[Chunk]:
     """Split at exact token windows, independent of sentence or paragraph boundaries."""
     _validate_chunk_sizes(max_tokens, overlap_tokens)
     tokens = _encoding.encode(text)
     stride = max_tokens - overlap_tokens
     return [
-        Chunk(index, _encoding.decode(tokens[start : start + max_tokens]), len(tokens[start : start + max_tokens]))
+        Chunk(
+            index,
+            _encoding.decode(tokens[start : start + max_tokens]),
+            len(tokens[start : start + max_tokens]),
+        )
         for index, start in enumerate(range(0, len(tokens), stride))
     ]
 

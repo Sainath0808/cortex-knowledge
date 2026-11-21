@@ -1,10 +1,9 @@
 import io
 
-from docx import Document as WordDocument
-
 from app.db.models import User
 from app.db.repositories.documents import DocumentRepository
 from app.services.document_service import extract_document
+from docx import Document as WordDocument
 
 
 def test_docx_extraction_includes_paragraphs_tables_and_metadata():
